@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Complete Profile</title>
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #b3ffab, #12fff7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      width: 380px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.2rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .profile-pic-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 1rem auto;
+      cursor: pointer;
+    }
+
+    .profile-pic {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e6e6e6;
+      border: 3px solid #00b894;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    select, button {
+      width: 90%;
+      padding: 10px;
+      margin: 10px auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      display: block;
+    }
+
+    button {
+      background: #00b894;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background: #00997a;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h2>Your Profile</h2>
+
+    <% if (errors && errors.length) { %>
+      <% errors.forEach(error => { %>
+        <p class="error"><%= error %></p>
+      <% }) %>
+    <% } %>
+
+    <form action="/complete-profile/<%= userId %>" method="POST" enctype="multipart/form-data">
+
+      <!-- Profile Picture -->
+      <div class="profile-pic-wrapper" onclick="document.getElementById('file-input').click()">
+        <img id="preview" class="profile-pic" src="/default-avatar.png" alt="Profile">
+      </div>
+
+      <input type="file" id="file-input" name="profile_pic" accept="image/*" onchange="previewImage(event)" />
+
+      <!-- Role -->
+      <label>Role / Occupation:</label>
+      <select name="role" required>
+        <option value="">Select role</option>
+        <option value="Employee">Employee</option>
+        <option value="Manager">Manager</option>
+        <option value="Supervisor">Supervisor</option>
+        <option value="HR">HR</option>
+        <option value="IT Support">IT Support</option>
+      </select>
+
+      <button type="submit">Save & Continue</button>
+
+    </form>
+
+  </div>
+
+  <script>
+    function previewImage(event) {
+      const preview = document.getElementById("preview");
+
+      if (event.target.files && event.target.files[0]) {
+        preview.src = URL.createObjectURL(event.target.files[0]);
+      }
+    }
+  </script>
+</body>
+</html>

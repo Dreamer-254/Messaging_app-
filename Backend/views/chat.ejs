@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LinkSphere Chat</title>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: #e5ddd5;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* TOP NAVIGATION BAR */ 
+.top-nav { 
+  width: 100%; 
+  height: 55px; 
+  background: #fff; 
+  border-bottom: 1px solid #ccc; 
+  display: flex; 
+  align-items: center; 
+  padding: 0 15px; 
+  gap: 15px;
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  z-index: 10; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+} 
+
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-item { 
+  margin-right: 25px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  color: #666; 
+  padding: 6px 10px; 
+  border-radius: 5px; 
+  transition: 0.2s; 
+} 
+
+.nav-item:hover { 
+  background: #e6e6e6;
+
+} 
+
+.nav-item.active { 
+  color: #00aaff; 
+  font-weight: bold; 
+} 
+
+   /* SYSTEM LOGO + NAME */
+.system-logo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.system-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-right: 20px;
+    color: #333;
+}
+
+/* SEARCH BAR */
+.search-bar {
+    width: 280px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #bbb;
+    margin-right: 20px;
+}
+
+/* DROPDOWN MENU */
+.dropdown {
+    position: relative;
+}
+.dropdown-content {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    width: 180px;
+    border-radius: 8px;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    padding: 12px;
+    display: block;
+    color: #444;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.dropdown-content a:hover {
+    background: #f5f5f5;
+}
+
+/* PROFILE ICON */
+.nav-profile {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+    /* Sidebar */
+  .sidebar { 
+    width: 27%; 
+    background: #fff; 
+    border-right: 1px solid #ccc; 
+    display: flex; 
+    flex-direction: column; 
+    margin-top: 55px; 
+  }
+
+  .sidebar-header { 
+    padding: 15px; 
+    display: flex; 
+    align-items: center; 
+    border-bottom: 1px solid #ccc; }
+
+
+    .chat-list {
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .chat-item {
+      padding: 12px;
+      border-radius: 8px;
+      background: #f7f7f7;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-item:hover {
+      background: #e8e8e8;
+    }
+
+    .chat-item img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    /* Chat Area */
+    .chat-area {
+      width: calc(100% - 220px);
+      display: flex;
+      margin-top: 55px;
+      flex-direction: column;
+      background: #efeae2;
+    }
+
+    .chat-header {
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+      background: #f0f0f0;
+    }
+
+    .chat-header img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    #messages {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      max-width: 60%;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .sent {
+      background: #d0f0c0;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+    }
+
+    .received {
+      background: #fff;
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+    }
+
+    .group-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #00aaff;
+  color: white;
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.group-btn:hover {
+  background: #0087cc;
+}
+
+.group-btn.remove {
+  background: #ff4d4d;
+}
+
+.group-btn.remove:hover {
+  background: #cc0000;
+}
+
+.info-member {
+  display:flex;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+}
+
+.info-member img {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  margin-right:10px;
+}
+
+.member-role {
+  font-size:12px;
+  color:#888;
+  margin-left:5px;
+}
+
+
+
+    .input-area {
+      padding: 12px;
+      background: #f0f0f0;
+      display: flex;
+    }
+
+    .input-area input {
+      flex-grow: 1;
+      padding: 12px;
+      border-radius: 25px;
+      border: 1px solid #bbb;
+      margin-right: 10px;
+    }
+
+    .input-area button {
+      padding: 12px 18px;
+      border-radius: 25px;
+      background: #00aaff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .employee-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.employee-item:hover {
+  background: #f0f0f0;
+}
+
+.employee-item img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+
+    /* Floating Button */
+    .floating-btn {
+      position: absolute;
+      bottom: 25px;
+      right: 25px;
+      background: #00aaff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.25);
+      transition: 0.3s;
+    }
+
+    .floating-btn:hover {
+      background: #0088cc;
+    }
+
+    /* Popup */
+    .popup {
+      position: absolute;
+      bottom: 200px;
+      right: 25px;
+      width: 280px;
+      max-height: 350px;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+      padding: 10px;
+    }
+  /* Center popups instead of stacking at right side */
+.popup-center {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  max-height: 350px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  display: none;
+}
+
+
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- TOP NAVIGATION BAR -->
+<div class="top-nav">
+
+    <!-- System Logo -->
+    <img src="/logo.png" class="system-logo" alt="Logo">
+
+    <!-- System Name -->
+    <div class="system-name">LinkSphere</div>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+        <div class="nav-item active" onclick="switchTab('chats', this)">Chats</div>
+        <div class="nav-item" onclick="switchTab('groups', this)">Groups</div>
+        <div class="nav-item" onclick="switchTab('status', this)">Status</div>
+    </div>
+
+    <!-- Search Bar -->
+    <input type="text" class="search-bar" placeholder="Search...">
+
+    <!-- Profile Icon -->
+    <img src="<%= user.profile_pic_url || '/default-avatar.png' %>"
+         class="nav-profile"
+         onclick="toggleDropdown()">
+
+    <!-- Dropdown Menu -->
+    <div class="dropdown">
+        <div class="dropdown-content" id="dropdownMenu">
+            <a href="profile.ejs">👤 Profile</a>
+            <a href="faq.ejs">❓ FAQ</a>
+            <a href="notifications.ejs">🔔 Notifications</a>
+            <a href="help.ejs">🆘 Help</a>
+            <a href="logout">🚪 Logout</a>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- ✅ status -->
+<div id="statusContainer" style="
+    display:none; 
+    width:73%; 
+    margin-top:55px; 
+    background:#efeae2; 
+    padding:20px; 
+    overflow-y:auto;">
+    
+    <h2>Your Status</h2>
+
+    <button onclick="openCreateStatus()" 
+      style="padding:8px 15px; background:#00aaff; color:white; border:none; border-radius:8px;">
+      + Add Status
+    </button>
+
+    <div id="myStatus" style="margin-top:15px;"></div>
+
+    <hr style="margin:20px 0;">
+
+    <h3>Recent Updates</h3>
+    <div id="otherStatuses"></div>
+</div>
+
+<div class="sidebar">
+  <div id="chatList" class="chat-list"></div>
+</div>
+
+<!-- ✅ Chat Area -->
+<div class="chat-area">
+  <div class="chat-header">
+  <img id="chatPic" src="/default-avatar.png">
+
+  <div style="display:flex; flex-direction:column; flex-grow:1;">
+    <span id="chatName" style="font-weight:600; font-size:16px;"></span>
+    <span id="groupMembers" style="font-size:12px; color:#666;"></span>
+  </div>
+
+  <!-- Three dots menu for groups -->
+  <div onclick="toggleGroupInfo()" 
+     style="margin-left:auto; cursor:pointer; font-size:22px; padding:5px;">
+  ⋮
+</div>
+
+<div id="groupActions" style="margin-left:10px; display:none;"> 
+  <button onclick="openAddMemberPopup()" class="group-btn">Add</button> 
+  <button onclick="openRemoveMemberPopup()" class="group-btn remove">Remove</button> 
+</div> 
+</div>
+
+
+  <div id="messages"></div>
+
+  <div class="input-area">
+    <input id="input" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<!-- ✅ Floating Button -->
+<div class="floating-btn" onclick="togglePopup()">+</div>
+
+<!-- ✅ Employee Popup -->
+<div class="popup" id="popup">
+
+<h4>Select User</h4>
+
+<% employees.forEach(emp => { %>
+  <div class="contact" data-userid="<%= emp.id %>">
+    <img src="<%= emp.profile_pic_url || '/default-avatar.png' %>" alt="<%= emp.username %>">
+    <span><%= emp.username %></span>
+  </div>
+<% }) %>
+
+
+</div>
+
+<!-- ✅ Create Group Popup -->
+<div id="createGroupPopup"
+  style="display:none; position:absolute; top:20%; left:40%; background:white; 
+         width:300px; padding:20px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.3);">
+
+  <h3>Create New Group</h3>
+
+  <input id="groupName" placeholder="Enter group name"
+         style="width:90%; padding:10px; margin-bottom:10px;">
+
+  <button onclick="createGroup()"
+          style="padding:10px 15px; background:#00aaff; color:white; border:none; border-radius:6px;">
+    Create
+  </button>
+
+  <button onclick="closeCreateGroup()"
+          style="padding:10px 15px; margin-left:5px; background:#ccc; border:none; border-radius:6px;">
+    Cancel
+  </button>
+</div>
+<!-- ✅ Add Member Popup -->
+<div id="addMemberPopup" class="popup-center">
+  <h4>Add Member to Group</h4>
+  <% employees.forEach(emp => { %>
+    <div class="employee-item" onclick="addMemberToGroup(<%= emp.id %>)">
+      <img src="<%= emp.profile_pic_url || '/default-avatar.png' %>">
+      <span><%= emp.username %></span>
+    </div>
+  <% }) %>
+  <button onclick="closeAddMemberPopup()" style="margin-top:10px;">Close</button>
+</div>
+
+<!-- ✅ Remove Member Popup -->
+<div id="removeMemberPopup" class="popup-center">
+  <h4>Remove Member from Group</h4>
+  <div id="removeList"></div>
+  <button onclick="closeRemoveMemberPopup()" style="margin-top:10px;">Close</button>
+</div>
+
+<!-- ✅ create-status Popup -->
+<div id="createStatusPopup"
+  style="display:none; position:absolute; top:20%; left:40%; background:white; width:300px; 
+  padding:20px; border-radius:12px; box-shadow:0 5px 20px rgba(0,0,0,0.3);">
+
+  <h3>Post a Status</h3>
+
+  <textarea id="statusText" placeholder="What's going on?" 
+    style="width:100%; height:80px; padding:10px; border-radius:6px; margin-bottom:10px;"></textarea>
+
+  <input type="file" id="statusMedia" accept="image/*,video/*" style="margin-bottom:10px;">
+
+  <button onclick="createStatus()" 
+    style="padding:8px 15px; background:#00aaff; color:white; border:none; border-radius:6px;">
+    Post
+  </button>
+
+  <button onclick="closeCreateStatus()" 
+    style="padding:8px 15px; background:#ccc; color:black; border:none; border-radius:6px;">
+    Cancel
+  </button>
+</div>
+
+<!-- GROUP INFO PANEL -->
+<div id="groupInfoPanel"
+  style="
+    position:absolute;
+    top:55px;
+    right:-400px;
+    width:350px;
+    height:calc(100% - 55px);
+    background:white;
+    box-shadow:-5px 0 15px rgba(0,0,0,0.2);
+    padding:20px;
+    transition:0.3s;
+    overflow-y:auto;
+    z-index:10;
+  ">
+  
+  <h2 id="infoGroupName"></h2>
+  
+  <img src="/default-avatar.png" id="infoGroupPic"
+       style="width:90px; height:90px; border-radius:50%; display:block; margin:auto;">
+
+  <h3 style="margin-top:25px;">Members</h3>
+  <div id="infoMembers"></div>
+
+  <!-- Admin controls -->
+  <div id="infoActions" style="margin-top:20px; display:none;">
+    <button onclick="openAddMemberPopup()" class="group-btn" style="width:100%; margin-bottom:10px;">
+      Add Member
+    </button>
+    <button onclick="openRemoveMemberPopup()" class="group-btn remove" style="width:100%;">
+      Remove Member
+    </button>
+    <button onclick="toggleGroupInfo()" style="margin-top:10px;">Close</button>
+  </div>
+
+</div>
+
+
+
+<!-- ✅ Convert groups to JavaScript -->
+<script>
+  const GROUPS = <%- JSON.stringify(groups) %>;
+
+</script>
+
+<script>
+  const socket = io();
+  const messages = document.getElementById("messages");
+  let currentReceiver = null;
+
+  socket.emit("user_online", <%= user.id %>);
+
+  function togglePopup() {
+    const popup = document.getElementById("popup");
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+  }
+
+  function switchTab(tab, el) {
+    document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+    el.classList.add("active");
+
+   if (tab === "status") {
+  document.querySelector(".chat-area").style.display = "none";
+  document.getElementById("statusContainer").style.display = "block";
+  loadStatuses();
+  return;
+}
+
+document.getElementById("statusContainer").style.display = "none";
+document.querySelector(".chat-area").style.display = "flex";
+
+
+   if (tab === "chats") {
+  currentGroup = null;          // 🔥 FIX
+  document.getElementById("chatList").innerHTML = "";
+  loadChats();                  // 🔥 FIX (prep for chat list)
+}
+
+
+    else if (tab === "groups") {
+      let html = "";
+
+      if (["Admin", "Manager", "IT Support"].includes("<%= user.role %>")) {
+        html += `
+          <button onclick="openCreateGroup()"
+            style="width:90%; padding:10px; margin:10px; background:#00aaff; 
+                   color:white; border:none; border-radius:8px;">
+            + Create Group
+          </button>
+        `;
+      }
+
+      GROUPS.forEach(g => {
+        html += `
+          <div class="chat-item" onclick="openGroup(${g.id})">
+            <img src="/default-avatar.png">
+            <span>${g.group_name}</span>
+          </div>
+        `;
+      });
+
+      document.getElementById("chatList").innerHTML = html;
+    }
+  }
+  let currentGroup = null;      // 
+
+
+  function startChat(id, name, pic) {
+    currentReceiver = id;
+      loadChats();   // refresh the sidebar so this chat appears
+
+    document.getElementById("chatName").innerText = name;
+    document.getElementById("chatPic").src = pic;
+    document.getElementById("popup").style.display = "none";
+
+    fetch(`/messages/${<%= user.id %>}/${id}`)
+      .then(res => res.json())
+      .then(history => {
+        messages.innerHTML = "";
+
+        history.forEach(msg => {
+          const bubble = document.createElement("div");
+          bubble.classList.add("message");
+          bubble.classList.add(msg.sender_id == <%= user.id %> ? "sent" : "received");
+
+          let ticks = "";
+          if (msg.sender_id == <%= user.id %>) {
+            if (msg.is_seen == 1) ticks = " ✓✓";
+            else if (msg.is_delivered == 1) ticks = " ✓";
+          }
+
+          bubble.textContent = msg.message + ticks;
+          messages.appendChild(bubble);
+        });
+
+        messages.scrollTop = messages.scrollHeight;
+
+        socket.emit("mark_seen", {
+          sender: id,
+          receiver: <%= user.id %>
+        });
+      });
+
+  }
+
+ function sendMessage() {
+  const input = document.getElementById("input");
+  if (!input.value.trim()) return;
+
+  // ✅ SEND TO GROUP
+  if (currentGroup) {
+    socket.emit("group message", {
+      sender: <%= user.id %>,
+      group_id: currentGroup,
+      message: input.value
+    });
+  }
+
+  // ✅ SEND TO USER
+  else if (currentReceiver) {
+    socket.emit("chat message", {
+      sender: <%= user.id %>,
+      receiver: currentReceiver,
+      message: input.value
+    });
+  }
+
+  input.value = "";
+}
+
+
+  socket.on("chat message", data => {
+    if (
+      (data.sender == currentReceiver && data.receiver == <%= user.id %>) ||
+      (data.sender == <%= user.id %> && data.receiver == currentReceiver)
+    ) {
+      const bubble = document.createElement("div");
+      bubble.classList.add("message");
+      bubble.classList.add(data.sender == <%= user.id %> ? "sent" : "received");
+
+      let ticks = "";
+      if (data.sender == <%= user.id %>) ticks = " ✓";
+
+      bubble.textContent = data.message + ticks;
+      messages.appendChild(bubble);
+      messages.scrollTop = messages.scrollHeight;
+    }
+  });
+
+  socket.on("group message", data => {
+  if (data.group_id === currentGroup) {
+    const bubble = document.createElement("div");
+    bubble.classList.add("message");
+    bubble.classList.add(data.sender == <%= user.id %> ? "sent" : "received");
+
+    bubble.textContent = data.message;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+  }
+});
+
+
+  socket.on("messages_seen", ({ receiver }) => {
+    if (receiver == currentReceiver) {
+      document.querySelectorAll(".sent").forEach(bubble => {
+        if (!bubble.textContent.includes("✓✓")) {
+          bubble.textContent = bubble.textContent.replace("✓", "✓✓");
+        }
+      });
+    }
+  });
+
+  socket.on("messages_delivered", () => {
+  document.querySelectorAll(".sent").forEach(b => {
+    if (!b.textContent.includes("✓"))
+      b.textContent += " ✓";
+  });
+});
+
+
+  socket.on("online_users", users => {
+    console.log("Online:", users);
+  });
+
+  function openCreateGroup() {
+    document.getElementById("createGroupPopup").style.display = "block";
+  }
+
+  function closeCreateGroup() {
+    document.getElementById("createGroupPopup").style.display = "none";
+  }
+
+  function createGroup() {
+  const name = document.getElementById("groupName").value.trim();
+  if (!name) return alert("Enter group name");
+
+  fetch("/create-group", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      group_name: name,
+      created_by: <%= user.id %>
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    closeCreateGroup();
+
+    // ✅ Reload page to get new groups
+    location.reload();
+  });
+}
+
+
+function openGroup(groupId) {
+  currentGroup = groupId;
+  currentReceiver = null;
+
+  const group = GROUPS.find(g => g.id === groupId);
+
+  document.getElementById("chatName").innerText = group.group_name;
+  document.getElementById("chatPic").src = "/default-avatar.png";
+  document.getElementById("popup").style.display = "none";
+
+  // Show/hide admin controls
+  if (["Admin", "HR"].includes("<%= user.role %>")) {
+    document.getElementById("groupActions").style.display = "block";
+  } else {
+    document.getElementById("groupActions").style.display = "none";
+  }
+
+  // Load group members
+  fetch(`/group-members/${groupId}`)
+    .then(res => res.json())
+    .then(members => {
+      let memberNames = members.map(m => m.username).join(", ");
+      document.getElementById("groupMembers").innerText = memberNames;
+    });
+
+  // Load messages
+  fetch(`/group-messages/${groupId}`)
+    .then(res => res.json())
+    .then(history => {
+      messages.innerHTML = "";
+
+      history.forEach(msg => {
+        const bubble = document.createElement("div");
+        bubble.classList.add("message");
+        bubble.classList.add(msg.sender_id == <%= user.id %> ? "sent" : "received");
+
+        bubble.textContent = msg.message;
+        messages.appendChild(bubble);
+      });
+
+      messages.scrollTop = messages.scrollHeight;
+    });
+}
+
+function loadGroupInfo() {
+  const group = GROUPS.find(g => g.id === currentGroup);
+  document.getElementById("infoGroupName").innerText = group.group_name;
+  document.getElementById("infoGroupPic").src = "/default-avatar.png";
+
+  // Show admin buttons only for admin roles
+if (currentGroup && ["Admin", "HR"].includes("<%= user.role %>")) {
+    document.getElementById("groupActions").style.display = "block";
+} else {
+    document.getElementById("groupActions").style.display = "none";
+}
+
+
+
+  fetch(`/group-members/${currentGroup}`)
+    .then(res => res.json())
+    .then(members => {
+      let html = "";
+      members.forEach(m => {
+        const role =
+          ["Admin", "Manager", "IT Support"].includes(m.role)
+            ? "(Admin)"
+            : "(Member)";
+
+        html += `
+          <div class="info-member">
+            <img src="${m.profile_pic_url || '/default-avatar.png'}">
+            <span>${m.username}</span>
+            <span class="member-role">${role}</span>
+          </div>
+        `;
+      });
+
+      document.getElementById("infoMembers").innerHTML = html;
+    });
+}
+
+
+function openAddMemberPopup() {
+  document.getElementById("addMemberPopup").style.display = "block";
+}
+
+function closeAddMemberPopup() {
+  document.getElementById("addMemberPopup").style.display = "none";
+}
+
+function addMemberToGroup(userId) {
+  fetch("/add-group-member", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      group_id: currentGroup,
+      user_id: userId,
+      added_by: <%= user.id %>
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    closeAddMemberPopup();
+    openGroup(currentGroup); // reload group members
+  });
+}
+
+
+
+function openRemoveMemberPopup() {
+  const list = document.getElementById("removeList");
+  list.innerHTML = "";   // FIX added
+
+  fetch(`/group-members/${currentGroup}`)
+    .then(res => res.json())
+    .then(members => {
+      list.innerHTML = members.map(m =>
+        `<div class="employee-item" onclick="removeMemberFromGroup(${m.id})">
+          <img src="${m.profile_pic_url || '/default-avatar.png'}">
+          <span>${m.username}</span>
+        </div>`
+      ).join("");
+      document.getElementById("removeMemberPopup").style.display = "block";
+    });
+}
+
+
+function closeRemoveMemberPopup() {
+  document.getElementById("removeMemberPopup").style.display = "none";
+}
+
+function removeMemberFromGroup(userId) {
+  fetch("/remove-group-member", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      group_id: currentGroup,
+      user_id: userId,
+      removed_by: <%= user.id %>
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    closeRemoveMemberPopup();
+    openGroup(currentGroup); // reload members
+  });
+}
+
+function toggleGroupInfo() {
+  const panel = document.getElementById("groupInfoPanel");
+  if (panel.style.right === "0px") {
+    panel.style.right = "-400px";
+  } else {
+    panel.style.right = "0px";
+    loadGroupInfo();
+
+    // 🔥 FIX: show admin buttons
+  document.getElementById("infoActions").style.display =
+  ["Admin", "HR"].includes("<%= user.role %>")
+  ? "block"
+  : "none";
+  }
+}
+
+function refreshGroups() {
+  fetch("/groups")
+    .then(res => res.json())
+    .then(list => {
+      GROUPS.length = 0;
+      list.forEach(g => GROUPS.push(g));
+      switchTab("groups", document.querySelector('[onclick="switchTab(\'groups\', this)"]'));
+    });
+}
+
+function loadChats() {
+  fetch("/chat-list/<%= user.id %>")
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to load chats");
+      return res.json();
+    })
+    .then(list => {
+      const container = document.getElementById("chatList");
+      container.innerHTML = "";
+
+      list.forEach(c => {
+        const item = document.createElement("div");
+        item.className = "chat-item";
+        item.addEventListener("click", () => startChat(c.id, c.username, c.profile_pic_url || '/default-avatar.png'));
+
+        const img = document.createElement("img");
+        img.src = c.profile_pic_url || '/default-avatar.png';
+        img.alt = c.username || "user";
+
+        const span = document.createElement("span");
+        span.textContent = c.username || "Unknown";
+
+        item.appendChild(img);
+        item.appendChild(span);
+        container.appendChild(item);
+      });
+    })
+    .catch(err => {
+      console.error("loadChats error:", err);
+      // optional: show fallback (all employees) or a message
+    });
+}
+
+function openCreateStatus() {
+  document.getElementById("createStatusPopup").style.display = "block";
+}
+
+function closeCreateStatus() {
+  document.getElementById("createStatusPopup").style.display = "none";
+}
+
+function createStatus() {
+  const text = document.getElementById("statusText").value.trim();
+  const media = document.getElementById("statusMedia").files[0];
+
+  const formData = new FormData();
+  formData.append("user_id", <%= user.id %>);
+  formData.append("text", text);
+  if (media) formData.append("media", media);
+
+  fetch("/create-status", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    closeCreateStatus();
+    loadStatuses();
+  });
+}
+
+function loadStatuses() {
+  fetch("/statuses")
+    .then(res => res.json())
+    .then(all => {
+      
+      const my = document.getElementById("myStatus");
+      const others = document.getElementById("otherStatuses");
+
+      my.innerHTML = "";
+      others.innerHTML = "";
+
+      // My status
+      const mine = all.filter(s => s.user_id == <%= user.id %>);
+      mine.forEach(s => {
+        my.innerHTML += renderStatus(s);
+      });
+
+      // Other users
+      const rest = all.filter(s => s.user_id != <%= user.id %>);
+      rest.forEach(s => {
+        others.innerHTML += renderStatus(s);
+      });
+    });
+}
+
+function renderStatus(s) {
+  let mediaHTML = "";
+  if (s.media_url) {
+    if (s.media_url.endsWith(".mp4")) {
+      mediaHTML = `<video src="${s.media_url}" controls style="width:100%; border-radius:8px;"></video>`;
+    } else {
+      mediaHTML = `<img src="${s.media_url}" style="width:100%; border-radius:8px;">`;
+    }
+  }
+
+  return `
+    <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
+      <strong>${s.username}</strong>
+      <p>${s.text}</p>
+      ${mediaHTML}
+      <span style="font-size:12px; color:#777;">${new Date(s.created_at).toLocaleString()}</span>
+    </div>
+  `;
+}
+
+document.querySelector(".search-bar").addEventListener("input", function() {
+  let search = this.value.toLowerCase();
+  document.querySelectorAll(".chat-item").forEach(item => {
+    item.style.display = item.innerText.toLowerCase().includes(search)
+      ? "flex" : "none";
+  });
+});
+
+
+
+</script>
+<script>
+function toggleDropdown() {
+    const menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+// Close dropdown if clicking outside
+document.addEventListener("click", function(event) {
+    const profile = document.querySelector(".nav-profile");
+    const menu = document.getElementById("dropdownMenu");
+
+    if (!profile.contains(event.target) && !menu.contains(event.target)) {
+        menu.style.display = "none";
+    }
+});
+</script>
+
+
+</body>
+</html>

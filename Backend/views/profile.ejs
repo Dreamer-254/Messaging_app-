@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <h1>My Profile</h1>
+  <div class="profile-card">
+    <img src="<%= user.profile_pic_url || '/default-avatar.png' %>" alt="Profile Picture" width="150" />
+    <p><strong>Username:</strong> <%= user.username %></p>
+    <p><strong>Employee Number:</strong> <%= user.employee_number %></p>
+    <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>Role:</strong> <%= user.role || "Not set" %></p>
+    <a href="/chat/<%= user.id %>">Back to Chat</a>
+  </div>
+</body>
+</html>

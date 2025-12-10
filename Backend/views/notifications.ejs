@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notifications</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <h1>Notifications</h1>
+
+  <% notifications.forEach(n => { %>
+    <div class="notification">
+      <p><%= n.text %></p>
+      <small><%= n.time %></small>
+    </div>
+  <% }) %>
+
+  <a href="/chat/<%= user?.id || '' %>">Back</a>
+</body>
+</html>
