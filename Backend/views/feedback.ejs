@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Send Feedback</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      background: #f4f6f8;
+      padding: 40px;
+    }
+
+    .box {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    h2 { margin-bottom: 20px; }
+
+    select, input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    button {
+      background: #00aaff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #008ecc;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <h2>Send Feedback</h2>
+
+    <form method="POST" action="/feedback">
+      <label>Send To</label>
+      <select name="recipient_role" required>
+        <option value="">-- Select --</option>
+        <option value="Admin">Admin</option>
+        <option value="HR">HR</option>
+      </select>
+
+      <label>Subject</label>
+      <input type="text" name="subject" required>
+
+      <label>Message</label>
+      <textarea name="message" required></textarea>
+
+      <button type="submit">Send Feedback</button>
+    </form>
+  </div>
+</body>
+</html>

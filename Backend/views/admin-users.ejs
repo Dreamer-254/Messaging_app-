@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Users</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      background:#f4f6f8;
+      padding:30px;
+    }
+
+    table {
+      width:100%;
+      background:white;
+      border-collapse:collapse;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    th, td {
+      padding:12px;
+      border-bottom:1px solid #eee;
+      text-align:left;
+    }
+
+    th {
+      background:#00aaff;
+      color:white;
+    }
+
+    button {
+      padding:6px 10px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      margin-right:5px;
+    }
+
+    .block { background:#ff9800; color:white; }
+    .unblock { background:#4caf50; color:white; }
+    .delete { background:#f44336; color:white; }
+  </style>
+</head>
+
+<body>
+  <h2>👮 Admin Panel – Users</h2>
+
+  <table>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+
+    <% users.forEach(u => { %>
+      <tr>
+        <td><%= u.username %></td>
+        <td><%= u.email %></td>
+        <td><%= u.role %></td>
+        <td>
+          <%= u.is_blocked ? "Blocked" : "Active" %>
+        </td>
+        <td>
+          <% if (u.id != user.id) { %>
+            <form method="POST" action="/admin/block-user" style="display:inline;">
+              <input type="hidden" name="user_id" value="<%= u.id %>">
+              <input type="hidden" name="block" value="<%= u.is_blocked ? 0 : 1 %>">
+              <button class="<%= u.is_blocked ? 'unblock' : 'block' %>">
+                <%= u.is_blocked ? "Unblock" : "Block" %>
+              </button>
+            </form>
+
+            <form method="POST" action="/admin/delete-user" style="display:inline;"
+                  onsubmit="return confirm('Delete this user?');">
+              <input type="hidden" name="user_id" value="<%= u.id %>">
+              <button class="delete">Delete</button>
+            </form>
+          <% } else { %>
+            <em>Current user</em>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>

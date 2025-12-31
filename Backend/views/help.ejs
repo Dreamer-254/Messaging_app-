@@ -1,14 +1,169 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Help</title>
-  <link rel="stylesheet" href="/styles.css" />
-</head>
-<body>
-  <h1>Help & Support</h1>
-  <p>If you need assistance, email: <strong>support@company.com</strong></p>
-  <p>Or call: <strong>+123 456 789</strong></p>
+<meta charset="UTF-8">
+<title>Help – LinkSphere</title>
+<style>
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f5f3f0;
+}
+/* NAVBAR */
+.navbar {
+  width: 100%;
+  background: #075e54;
+  color: #fff;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar a {
+  color: #fff;
+  margin-left: 20px;
+  text-decoration: none;
+  font-size: 15px;
+}
+.navbar a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+.logo {
+  height: 35px;
+  margin-right: 10px;
+}
+.left {
+  display: flex;
+  align-items: center;
+}
+.container {
+  width: 70%;
+  margin: 40px auto;
+}
+h1 {
+  font-size: 35px;
+  color: #075e54;
+  text-align: center;
+}
+.subtitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+.help-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.help-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.1);
+  padding: 20px;
+}
+.help-card h2 {
+  color: #075e54;
+}
+.help-card p {
+  color: #333;
+}
+.help-card ul {
+  margin-top: 10px;
+  padding-left: 20px;
+  color: #555;
+}
+.support-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 15px;
+  background: #075e54;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+}
 
-  <a href="/chat/<%= user?.id || '' %>">Back</a>
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="left">
+    <img src="/linksphere.jpg" class="logo">
+    <span class="app-name">LinkSphere</span>
+  </div>
+  <div class="right">
+    <a href="/chat">Chats</a>
+    <a href="/groups">Groups</a>
+    <a href="/status">Status</a>
+    <a href="/notifications">Notifications</a>
+    <a href="/help" class="active">Help</a>
+    <a href="/faq">FAQ</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+  <h1>Help Center</h1>
+  <p class="subtitle">We're here to help you use LinkSphere better</p>
+
+  <div class="help-sections">
+
+    <!-- SECTION 1 -->
+    <div class="help-card">
+      <h2>Getting Started</h2>
+      <p>Learn how to create an account, set up your profile, and start chatting.</p>
+      <ul>
+        <li>How to register</li>
+        <li>How to edit your profile</li>
+        <li>How to find contacts</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="help-card">
+      <h2>Chats & Messaging</h2>
+      <p>Understand how to send messages, media, and manage conversations.</p>
+      <ul>
+        <li>Send and receive messages</li>
+        <li>Block or unblock users</li>
+        <li>Clear chat or delete chat</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="help-card">
+      <h2>Groups</h2>
+      <p>Learn how to create, manage, and customize your groups.</p>
+      <ul>
+        <li>Create a group</li>
+        <li>Remove participants</li>
+        <li>Change group icon or name</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="help-card">
+      <h2>Account & Security</h2>
+      <p>Protect your account and secure your data on LinkSphere.</p>
+      <ul>
+        <li>Two-factor authentication</li>
+        <li>Suspicious login alerts</li>
+        <li>Delete your account</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="help-card">
+      <h2>Contact Support</h2>
+      <p>If you didn’t find what you’re looking for, contact our support team.</p>
+      <a href="mailto:support@linksphere.com" class="support-btn">Email Support</a>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>

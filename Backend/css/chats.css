@@ -1,0 +1,363 @@
+ .body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: #e5ddd5;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    }
+
+.top-nav { 
+   width: 100%; 
+   height: 55px; 
+   background: #fff; 
+   border-bottom: 1px solid #ccc; 
+   display: flex; 
+   align-items: center; 
+   padding: 15px 15px; 
+   gap: 15px;
+   position: fixed; 
+   top: 0; 
+   left: 0; 
+   z-index: 10; 
+   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.nav-left,.nav-center, .nav-right {
+  display: flex;
+  align-items: center;
+} 
+
+.nav-right {
+  margin-left: auto;
+  margin-right: 30px;
+}
+
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-item { 
+  margin-right: 25px; 
+  cursor: pointer; 
+  font-size: 16px; 
+  color: #666; 
+  padding: 6px 10px; 
+  border-radius: 5px; 
+  transition: 0.2s; 
+} 
+
+.nav-item:hover { 
+  background: #e6e6e6;
+
+} 
+
+.nav-item.active { 
+  color: #00aaff; 
+  font-weight: bold; 
+} 
+
+   /* SYSTEM LOGO + NAME */
+.system-logo {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+.system-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-right: 20px;
+    color: #333;
+}
+
+.search-bar {
+    width: 280px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #bbb;
+    margin-right: 20px;
+}
+
+.dropdown {
+    position: relative;
+}
+.dropdown-content {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    width: 180px;
+    border-radius: 8px;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    padding: 12px;
+    display: block;
+    color: #444;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.dropdown-content a:hover {
+    background: #f5f5f5;
+}
+
+.nav-profile {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+ .sidebar { 
+    width: 27%; 
+    background: #fff; 
+    border-right: 1px solid #ccc; 
+    display: flex; 
+    flex-direction: column; 
+    margin-top: 55px; 
+  }
+
+.sidebar-header { 
+    padding: 15px; 
+    display: flex; 
+    align-items: center; 
+    border-bottom: 1px solid #ccc; }
+
+
+.chat-list {
+    padding: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.chat-item {
+    padding: 15px;
+    border-radius: 8px;
+    background: #f7f7f7;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.chat-item:hover {
+    background: #e8e8e8;
+}
+
+.chat-item img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.chat-area {
+    width: calc(100% - 220px);
+    display: flex;
+    margin-top: 55px;
+    flex-direction: column;
+    background: #efeae2;
+ }
+
+.chat-header {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    background: #f0f0f0;
+}
+
+.chat-header img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+#messages {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    max-width: 60%;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.sent {
+     background: #d0f0c0;
+     align-self: flex-end;
+     border-bottom-right-radius: 0;
+ }
+
+ .received {
+     background: #fff;
+     align-self: flex-start;
+     border-bottom-left-radius: 0;
+}
+
+.group-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #00aaff;
+    color: white;
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.2s;
+}
+
+.group-btn:hover {
+    background: #0087cc;
+}
+
+.group-btn.remove {
+    background: #ff4d4d;
+}
+
+.group-btn.remove:hover {
+    background: #cc0000;
+}
+
+.info-member {
+    display:flex;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid #eee;
+}
+
+.info-member img {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    margin-right:10px;
+}
+
+.member-role {
+    font-size:12px;
+    color:#888;
+    margin-left:5px;
+}
+
+.input-area {
+    padding: 12px;
+    background: #f0f0f0;
+    display: flex;
+}
+
+.input-area input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 25px;
+    border: 1px solid #bbb;
+    margin-right: 10px;
+}
+
+.input-area button {
+    padding: 12px 18px;
+    border-radius: 25px;
+    background: #00aaff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.employee-item {
+   display: flex;
+   align-items: center;
+   padding: 8px;
+   border-radius: 6px;
+   cursor: pointer;
+   transition: 0.2s;
+}
+
+.employee-item:hover {
+   background: #f0f0f0;
+}
+
+.employee-item img {
+   width: 35px;
+   height: 35px;
+   border-radius: 50%;
+   margin-right: 10px;
+   object-fit: cover;
+}
+
+.floating-btn {
+   position: fixed;      /* so it stays on screen */
+   bottom: 25px;         /* distance from bottom */
+   left: 25px;           /* distance from left */
+   background: #00aaff;
+   width: 60px;
+   height: 60px;
+   border-radius: 50%;
+   color: white;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 28px;
+   cursor: pointer;
+   box-shadow: 0 5px 12px rgba(0,0,0,0.25);
+   transition: 0.3s;
+   z-index: 1001;       /* above popup */
+}
+
+.floating-btn:hover {
+   background: #0088cc;
+}
+.popup {
+   position: fixed;       /* fixed to viewport */
+   bottom: 25px;          /* distance from bottom */
+   left: 25px;            /* distance from left */
+   width: 280px;
+   max-height: 350px;
+   overflow-y: auto;
+   background: #fff;
+   border-radius: 12px;
+   box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+   display: none;
+   animation: fadeIn 0.25s ease-in-out;
+   padding: 10px;
+   z-index: 1000;         /* ensure it's above other elements */
+}
+
+.popup-center {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  max-height: 350px;
+  overflow-y: auto;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  display: none;
+}
+
+
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }

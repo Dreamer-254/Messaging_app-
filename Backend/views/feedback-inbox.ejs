@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Feedback Inbox</title>
+  <style>
+    body {
+      font-family: Poppins, sans-serif;
+      background:#f4f6f8;
+      padding:30px;
+    }
+
+    .card {
+      background:white;
+      padding:15px;
+      margin-bottom:15px;
+      border-radius:10px;
+      box-shadow:0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    .meta {
+      font-size:13px;
+      color:#666;
+      margin-bottom:5px;
+    }
+
+    h3 {
+      margin:5px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>📬 Feedback Inbox</h2>
+
+  <% if (feedback.length === 0) { %>
+    <p>No feedback yet.</p>
+  <% } %>
+
+  <% feedback.forEach(f => { %>
+    <div class="card">
+      <div class="meta">
+        From: <strong><%= f.username %></strong> |
+        <%= new Date(f.created_at).toLocaleString() %>
+      </div>
+
+      <h3><%= f.subject %></h3>
+      <p><%= f.message %></p>
+    </div>
+  <% }) %>
+</body>
+</html>

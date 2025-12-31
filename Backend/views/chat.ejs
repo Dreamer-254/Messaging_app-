@@ -4,387 +4,19 @@
   <meta charset="UTF-8">
   <title>LinkSphere Chat</title>
   <script src="/socket.io/socket.io.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Poppins", sans-serif;
-      background: #e5ddd5;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* TOP NAVIGATION BAR */ 
-.top-nav { 
-  width: 100%; 
-  height: 55px; 
-  background: #fff; 
-  border-bottom: 1px solid #ccc; 
-  display: flex; 
-  align-items: center; 
-  padding: 0 15px; 
-  gap: 15px;
-  position: fixed; 
-  top: 0; 
-  left: 0; 
-  z-index: 10; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-} 
-
-.nav-tabs {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.nav-item { 
-  margin-right: 25px; 
-  cursor: pointer; 
-  font-size: 16px; 
-  color: #666; 
-  padding: 6px 10px; 
-  border-radius: 5px; 
-  transition: 0.2s; 
-} 
-
-.nav-item:hover { 
-  background: #e6e6e6;
-
-} 
-
-.nav-item.active { 
-  color: #00aaff; 
-  font-weight: bold; 
-} 
-
-   /* SYSTEM LOGO + NAME */
-.system-logo {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-}
-
-.system-name {
-    font-size: 20px;
-    font-weight: 700;
-    margin-right: 20px;
-    color: #333;
-}
-
-/* SEARCH BAR */
-.search-bar {
-    width: 280px;
-    padding: 8px 12px;
-    border-radius: 20px;
-    border: 1px solid #bbb;
-    margin-right: 20px;
-}
-
-/* DROPDOWN MENU */
-.dropdown {
-    position: relative;
-}
-.dropdown-content {
-    position: absolute;
-    top: 45px;
-    right: 0;
-    background: white;
-    width: 180px;
-    border-radius: 8px;
-    display: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    overflow: hidden;
-}
-
-.dropdown-content a {
-    padding: 12px;
-    display: block;
-    color: #444;
-    text-decoration: none;
-    font-size: 15px;
-}
-
-.dropdown-content a:hover {
-    background: #f5f5f5;
-}
-
-/* PROFILE ICON */
-.nav-profile {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-left: auto;
-    cursor: pointer;
-}
-
-    /* Sidebar */
-  .sidebar { 
-    width: 27%; 
-    background: #fff; 
-    border-right: 1px solid #ccc; 
-    display: flex; 
-    flex-direction: column; 
-    margin-top: 55px; 
-  }
-
-  .sidebar-header { 
-    padding: 15px; 
-    display: flex; 
-    align-items: center; 
-    border-bottom: 1px solid #ccc; }
-
-
-    .chat-list {
-      padding: 10px;
-      overflow-y: auto;
-      flex-grow: 1;
-    }
-
-    .chat-item {
-      padding: 12px;
-      border-radius: 8px;
-      background: #f7f7f7;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-    }
-
-    .chat-item:hover {
-      background: #e8e8e8;
-    }
-
-    .chat-item img {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-    }
-
-    /* Chat Area */
-    .chat-area {
-      width: calc(100% - 220px);
-      display: flex;
-      margin-top: 55px;
-      flex-direction: column;
-      background: #efeae2;
-    }
-
-    .chat-header {
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #ccc;
-      background: #f0f0f0;
-    }
-
-    .chat-header img {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-    }
-
-    #messages {
-      flex-grow: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .message {
-      max-width: 60%;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-
-    .sent {
-      background: #d0f0c0;
-      align-self: flex-end;
-      border-bottom-right-radius: 0;
-    }
-
-    .received {
-      background: #fff;
-      align-self: flex-start;
-      border-bottom-left-radius: 0;
-    }
-
-    .group-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 8px;
-  background: #00aaff;
-  color: white;
-  margin-left: 5px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: 0.2s;
-}
-
-.group-btn:hover {
-  background: #0087cc;
-}
-
-.group-btn.remove {
-  background: #ff4d4d;
-}
-
-.group-btn.remove:hover {
-  background: #cc0000;
-}
-
-.info-member {
-  display:flex;
-  align-items:center;
-  padding:10px 0;
-  border-bottom:1px solid #eee;
-}
-
-.info-member img {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  margin-right:10px;
-}
-
-.member-role {
-  font-size:12px;
-  color:#888;
-  margin-left:5px;
-}
-
-
-
-    .input-area {
-      padding: 12px;
-      background: #f0f0f0;
-      display: flex;
-    }
-
-    .input-area input {
-      flex-grow: 1;
-      padding: 12px;
-      border-radius: 25px;
-      border: 1px solid #bbb;
-      margin-right: 10px;
-    }
-
-    .input-area button {
-      padding: 12px 18px;
-      border-radius: 25px;
-      background: #00aaff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    .employee-item {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.employee-item:hover {
-  background: #f0f0f0;
-}
-
-.employee-item img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
-}
-
-
-    /* Floating Button */
-    .floating-btn {
-      position: absolute;
-      bottom: 25px;
-      right: 25px;
-      background: #00aaff;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 28px;
-      cursor: pointer;
-      box-shadow: 0 5px 12px rgba(0,0,0,0.25);
-      transition: 0.3s;
-    }
-
-    .floating-btn:hover {
-      background: #0088cc;
-    }
-
-    /* Popup */
-    .popup {
-      position: absolute;
-      bottom: 200px;
-      right: 25px;
-      width: 280px;
-      max-height: 350px;
-      overflow-y: auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-      display: none;
-      animation: fadeIn 0.25s ease-in-out;
-      padding: 10px;
-    }
-  /* Center popups instead of stacking at right side */
-.popup-center {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 300px;
-  max-height: 350px;
-  overflow-y: auto;
-  background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  display: none;
-}
-
-
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.85); }
-      to { opacity: 1; transform: scale(1); }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/chats.css">
 </head>
 
 <body>
 
 <!-- TOP NAVIGATION BAR -->
-<div class="top-nav">
-
-    <!-- System Logo -->
-    <img src="/logo.png" class="system-logo" alt="Logo">
-
-    <!-- System Name -->
+<nav class="top-nav">
+  <div class="nav-left">
+    <img src="/linksphere.jpg" class="system-logo" alt="Logo">
     <div class="system-name">LinkSphere</div>
+  </div>
 
-    <!-- Navigation Tabs -->
-    <div class="nav-tabs">
+    <div class="nav-center">
         <div class="nav-item active" onclick="switchTab('chats', this)">Chats</div>
         <div class="nav-item" onclick="switchTab('groups', this)">Groups</div>
         <div class="nav-item" onclick="switchTab('status', this)">Status</div>
@@ -393,23 +25,31 @@
     <!-- Search Bar -->
     <input type="text" class="search-bar" placeholder="Search...">
 
-    <!-- Profile Icon -->
+  <div class="nav-right">
     <img src="<%= user.profile_pic_url || '/default-avatar.png' %>"
          class="nav-profile"
          onclick="toggleDropdown()">
 
-    <!-- Dropdown Menu -->
     <div class="dropdown">
         <div class="dropdown-content" id="dropdownMenu">
-            <a href="profile.ejs">👤 Profile</a>
-            <a href="faq.ejs">❓ FAQ</a>
-            <a href="notifications.ejs">🔔 Notifications</a>
-            <a href="help.ejs">🆘 Help</a>
-            <a href="logout">🚪 Logout</a>
-        </div>
+    <a href="/profile">👤 Profile</a>
+    <a href="/faq">❓ FAQ</a>
+    <a href="/notifications">🔔 Notifications</a>
+    <a href="/help">🆘 Help</a>
+    <a href="/feedback">📝 Feedback</a>
+    <% if (["Admin", "HR"].includes(user.role)) { %>
+    <a href="/feedback-inbox">📬 Feedback Inbox</a>
+    <% } %>
+    <% if (user.role === "Admin") { %>
+    <a href="/admin/users">👮 Admin Panel</a>
+    <% } %>
+    <a href="/logout" class="logout">🚪 Logout</a>
+</div>
+
+    </div>
     </div>
 
-</div>
+  </nav>
 
 
 
@@ -466,10 +106,19 @@
 
   <div id="messages"></div>
 
-  <div class="input-area">
-    <input id="input" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
-  </div>
+ <div class="input-area" style="display:flex; align-items:center; gap:5px;">
+  <input id="input" placeholder="Type a message..." style="flex-grow:1; padding:8px; border-radius:6px;">
+  
+  <!-- File Upload -->
+  <form id="fileUploadForm" action="/upload" method="POST" enctype="multipart/form-data" style="margin:0;">
+    <label for="fileInput" style="cursor:pointer; font-size:20px;">📎</label>
+    <input type="file" name="file" id="fileInput" style="display:none;" onchange="document.getElementById('fileUploadForm').submit();">
+  </form>
+
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+
 </div>
 
 <!-- ✅ Floating Button -->
@@ -477,17 +126,14 @@
 
 <!-- ✅ Employee Popup -->
 <div class="popup" id="popup">
+  <h4>Select User</h4>
 
-<h4>Select User</h4>
-
-<% employees.forEach(emp => { %>
-  <div class="contact" data-userid="<%= emp.id %>">
-    <img src="<%= emp.profile_pic_url || '/default-avatar.png' %>" alt="<%= emp.username %>">
-    <span><%= emp.username %></span>
-  </div>
-<% }) %>
-
-
+  <% employees.forEach(emp => { %>
+    <div class="employee-item" onclick="startChat(<%= emp.id %>, '<%= emp.username %>', '<%= emp.profile_pic_url || '/default-avatar.png' %>')">
+      <img src="<%= emp.profile_pic_url || '/default-avatar.png' %>">
+      <span><%= emp.username %></span>
+    </div>
+  <% }) %>
 </div>
 
 <!-- ✅ Create Group Popup -->
@@ -510,6 +156,42 @@
     Cancel
   </button>
 </div>
+<div id="groupInfoPanel"
+  style="
+    position:absolute;
+    top:55px;
+    right:-400px;
+    width:350px;
+    height:calc(80% - 50px);
+    background:white;
+    box-shadow:-5px 0 15px rgba(0,0,0,0.2);
+    padding:20px;
+    transition:0.3s;
+    overflow-y:auto;
+    z-index:10;
+  ">
+  
+  <h2 id="infoGroupName"></h2>
+  
+  <img src="/default-avatar.png" id="infoGroupPic"
+       style="width:90px; height:90px; border-radius:50%; display:block; margin:auto;">
+
+  <h3 style="margin-top:25px;">Members</h3>
+  <div id="infoMembers"></div>
+
+  <!-- Admin controls -->
+  <div id="infoActions" style="margin-top:20px; display:none;">
+    <button onclick="openAddMemberPopup()" class="group-btn" style="width:100%; margin-bottom:10px;">
+      Add Member
+    </button>
+    <button onclick="openRemoveMemberPopup()" class="group-btn remove" style="width:100%;">
+      Remove Member
+    </button>
+    <button onclick="toggleGroupInfo()" style="margin-top:10px;">Close</button>
+  </div>
+
+</div>
+
 <!-- ✅ Add Member Popup -->
 <div id="addMemberPopup" class="popup-center">
   <h4>Add Member to Group</h4>
@@ -552,46 +234,7 @@
   </button>
 </div>
 
-<!-- GROUP INFO PANEL -->
-<div id="groupInfoPanel"
-  style="
-    position:absolute;
-    top:55px;
-    right:-400px;
-    width:350px;
-    height:calc(100% - 55px);
-    background:white;
-    box-shadow:-5px 0 15px rgba(0,0,0,0.2);
-    padding:20px;
-    transition:0.3s;
-    overflow-y:auto;
-    z-index:10;
-  ">
-  
-  <h2 id="infoGroupName"></h2>
-  
-  <img src="/default-avatar.png" id="infoGroupPic"
-       style="width:90px; height:90px; border-radius:50%; display:block; margin:auto;">
 
-  <h3 style="margin-top:25px;">Members</h3>
-  <div id="infoMembers"></div>
-
-  <!-- Admin controls -->
-  <div id="infoActions" style="margin-top:20px; display:none;">
-    <button onclick="openAddMemberPopup()" class="group-btn" style="width:100%; margin-bottom:10px;">
-      Add Member
-    </button>
-    <button onclick="openRemoveMemberPopup()" class="group-btn remove" style="width:100%;">
-      Remove Member
-    </button>
-    <button onclick="toggleGroupInfo()" style="margin-top:10px;">Close</button>
-  </div>
-
-</div>
-
-
-
-<!-- ✅ Convert groups to JavaScript -->
 <script>
   const GROUPS = <%- JSON.stringify(groups) %>;
 
@@ -1117,7 +760,38 @@ document.addEventListener("click", function(event) {
     }
 });
 </script>
+<script>
+function uploadFile() {
+  const fileInput = document.getElementById("fileInput");
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
 
+  fetch("/upload", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("File uploaded:", data);
+
+    // Display file in chat
+    const messagesDiv = document.getElementById("messages");
+    let fileHTML = "";
+    if (data.filename.match(/\.(jpg|jpeg|png|gif)$/i)) {
+      // Image preview
+      fileHTML = `<div class="chat-message"><img src="${data.url}" style="max-width:200px; border-radius:6px;"></div>`;
+    } else {
+      // Download link for docs
+      fileHTML = `<div class="chat-message"><a href="${data.url}" target="_blank">${data.originalname}</a></div>`;
+    }
+    messagesDiv.innerHTML += fileHTML;
+
+    // Reset file input
+    fileInput.value = "";
+  })
+  .catch(err => console.error(err));
+}
+</script>
 
 </body>
 </html>

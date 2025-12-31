@@ -46,6 +46,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());  // ✅ Needed for JSON from fetch()
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
 
 // --------- FILE UPLOAD SETUP (MULTER) ----------
@@ -86,6 +88,14 @@ app.use(session({
   cookie: { maxAge: 24 * 60 * 60 * 1000 } // 1 day
 }));
 
+//---login guard middleware ----
+app.use((req, res, next) => {
+  if (req.session.user && req.session.user.is_blocked) {
+    return res.send("Your account has been blocked by Admin.");
+  }
+  next();
+});
+
 
 // --------- ROUTES ----------
 
@@ -93,6 +103,19 @@ app.get("/", (req, res) => res.render("home"));
 
 app.get("/login", (req, res) => {
   res.render("login", { errors: [] });
+});
+app.get("/faq", (req, res) => {
+  res.render("faq");
+});
+app.get("/notifications", (req, res) => {
+  res.render("notifications");
+});
+app.get("/help", (req, res) => {
+  res.render("help");
+});
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/login");
 });
 
 
@@ -116,18 +139,11 @@ app.post("/login", (req, res) => {
         return res.render("login", { errors: ["Invalid employee number or password."] });
 
       req.session.user = {
-  id: user.id,
-  username: user.username,
-  name: user.name,
-  email: user.email,                // <-- FIX ADDED
-  employee_number: user.employee_number,
-  role: user.role,
-  profile_pic_url: user.profile_pic_url
-};
-
-
-    console.log("SESSION SET:", req.session.user);
-
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        profile_pic_url: user.profile_pic_url
+     };
 
 
 
@@ -144,12 +160,11 @@ app.post("/login", (req, res) => {
           if (err) throw err;
 
           db.query("SELECT * FROM chat_groups", (err, groups) => {
-            if (err) throw err;
+    if (err) throw err;
 
-            req.session.save(() => {
-              res.redirect(`/chat/${user.id}`);
-            });
-          });
+    res.redirect(`/chat/${user.id}`);
+     });
+
         }
       );
     }
@@ -157,36 +172,33 @@ app.post("/login", (req, res) => {
 });
 
 // ✅ Chat Page Route (loads groups every time)
-app.get("/chat/:id", requireLogin, (req, res) => {
-  console.log("Opening chat page for userId =", req.params.id);
+app.get("/chat/:id", (req, res) => {
   const userId = req.params.id;
 
+  // Load logged user info
   db.query("SELECT * FROM users WHERE id = ?", [userId], (err, userResult) => {
     if (err) throw err;
     if (userResult.length === 0) return res.send("❌ User not found");
 
     const user = userResult[0];
 
+    // Load all other employees
     db.query(
       "SELECT id, username, profile_pic_url FROM users WHERE id != ?",
       [userId],
       (err, employees) => {
         if (err) throw err;
 
+        // ✅ Load all groups
         db.query("SELECT * FROM chat_groups", (err, groups) => {
           if (err) throw err;
 
-          res.render("chat", {
-            user: user,
-            employees: employees,
-            groups: groups
-          });
+          res.render("chat", { user, employees, groups });
         });
       }
     );
   });
 });
-
 
 
 // ---------------- REGISTER (STEP 1) ----------------
@@ -308,7 +320,7 @@ app.post("/create-group", (req, res) => {
 
     const role = result[0].role;
 
-    if (!["Admin", "HR" , "Manager"].includes(role)) {
+    if (!["Admin", "HR"].includes(role)) {
       return res.status(403).send("❌ You are not allowed to create groups.");
     }
 
@@ -467,55 +479,214 @@ app.get("/status", (req, res) => {
         );
     });
 });
-// --------- PROTECTED ROUTE MIDDLEWARE ----------
-function requireLogin(req, res, next) {
+
+// ------------- profile -------------
+
+app.get("/profile", isLoggedIn, (req, res) => {
+  const userId = req.session.user.id;
+
+  db.query("SELECT * FROM users WHERE id = ?", [userId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.redirect("/login");
+    }
+
+    if (results.length === 0) {
+      return res.redirect("/login");
+    }
+
+    res.render("profile", {
+      user: results[0]
+    });
+  });
+});
+
+function isLoggedIn(req, res, next) {
   if (!req.session.user) {
     return res.redirect("/login");
   }
   next();
 }
 
-// ---------------- PROFILE ----------------
-app.get("/profile", (req, res) => {
-  // Check if user is logged in
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
 
-  // Render profile using session data
-  res.render("profile", { user: req.session.user });
-});
+app.post("/update-profile", isLoggedIn, (req, res) => {
+  const { username, email } = req.body;
+  const userId = req.session.user.id;
 
+  const sql = "UPDATE users SET username = ?, email = ? WHERE id = ?";
 
+  db.query(sql, [username, email, userId], err => {
+    if (err) {
+      console.error(err);
+      return res.send("Error updating profile");
+    }
 
-// ---------------- NOTIFICATIONS ----------------
-app.get("/notifications", requireLogin, (req, res) => {
-  const notifications = [
-    { text: "Welcome to the system!", time: "Just now" },
-    { text: "Your profile was updated successfully.", time: "10 min ago" },
-    { text: "New system update available.", time: "1 hour ago" }
-  ];
-  res.render("notifications", { user: req.session.user, notifications });
-});
+    // 🔁 Update session data
+    req.session.user.username = username;
 
-// ---------------- FAQ ----------------
-app.get("/faq", requireLogin, (req, res) => {
-  res.render("faq", { user: req.session.user });
-});
-
-// ---------------- HELP ----------------
-app.get("/help", requireLogin, (req, res) => {
-  res.render("help", { user: req.session.user });
-});
-
-// ---------------- LOGOUT ----------------
-app.get("/logout", (req, res) => {
-  req.session.destroy(err => {
-    if (err) console.log(err);
-    res.redirect("/login");
+    res.redirect("/profile");
   });
 });
 
+app.post(
+  "/upload-avatar",
+  isLoggedIn,
+  upload.single("avatar"),
+  (req, res) => {
+    if (!req.file) return res.redirect("/profile");
+
+    const avatarPath = "/uploads/" + req.file.filename;
+    const userId = req.session.user.id;
+
+    db.query(
+      "UPDATE users SET profile_pic_url = ? WHERE id = ?",
+      [avatarPath, userId],
+      err => {
+        if (err) {
+          console.error(err);
+          return res.redirect("/profile");
+        }
+
+        // 🔁 update session
+        req.session.user.profile_pic_url = avatarPath;
+
+        res.redirect("/profile");
+      }
+    );
+  }
+);
+// File upload rout
+
+app.post("/upload", upload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).send("No file uploaded.");
+
+  const userId = req.session.userId;
+  const filename = req.file.filename;
+  const originalname = req.file.originalname;
+
+  db.query(
+    "INSERT INTO files (user_id, filename, originalname) VALUES (?, ?, ?)",
+    [userId, filename, originalname],
+    (err, result) => {
+      if (err) return res.status(500).send("DB error");
+
+      // Return JSON with file info
+      res.json({
+        filename,
+        originalname,
+        url: `/uploads/${filename}`
+      });
+    }
+  );
+});
+
+// Show feedback page
+app.get("/feedback", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  res.render("feedback", {
+    user: req.session.user
+  });
+});
+
+// Submit feedback
+app.post("/feedback", (req, res) => {
+  const { recipient_role, subject, message } = req.body;
+  const sender_id = req.session.user.id;
+
+  if (!recipient_role || !subject || !message) {
+    return res.send("All fields required");
+  }
+
+  const sql = `
+    INSERT INTO feedback (sender_id, recipient_role, subject, message)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(sql, [sender_id, recipient_role, subject, message], err => {
+    if (err) throw err;
+    res.send("Feedback sent successfully");
+  });
+});
+
+app.get("/feedback-inbox", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
+  const role = req.session.user.role;
+
+  // Only Admin & HR allowed
+  if (!["Admin", "HR"].includes(role)) {
+    return res.send("Access denied");
+  }
+
+  const sql = `
+    SELECT f.*, u.username 
+    FROM feedback f
+    JOIN users u ON f.sender_id = u.id
+    WHERE f.recipient_role = ?
+    ORDER BY f.created_at DESC
+  `;
+
+  db.query(sql, [role], (err, feedback) => {
+    if (err) throw err;
+    res.render("feedback-inbox", {
+      user: req.session.user,
+      feedback
+    });
+  });
+});
+
+//-------admin user management route ---------
+app.get("/admin/users", requireAdmin, (req, res) => {
+  db.query(
+    "SELECT id, username, email, role, is_blocked, created_at FROM users ORDER BY created_at DESC",
+    (err, users) => {
+      if (err) throw err;
+      res.render("admin-users", {
+        user: req.session.user,
+        users
+      });
+    }
+  );
+});
+// Middleware to check for Admin role
+function requireAdmin(req, res, next) {
+  if (!req.session.user || req.session.user.role !== "Admin") {
+    return res.status(403).send("Access denied");
+  }
+  next();
+}
+//----block/unblock user -----
+app.post("/admin/block-user", requireAdmin, (req, res) => {
+  const { user_id, block } = req.body;
+
+  db.query(
+    "UPDATE users SET is_blocked=? WHERE id=?",
+    [block ? 1 : 0, user_id],
+    err => {
+      if (err) throw err;
+      res.redirect("/admin/users");
+    }
+  );
+});
+//----delete user -----
+app.post("/admin/delete-user", requireAdmin, (req, res) => {
+  const { user_id } = req.body;
+
+  // Prevent admin from deleting self
+  if (user_id == req.session.user.id) {
+    return res.send("You cannot delete yourself");
+  }
+
+  db.query(
+    "DELETE FROM users WHERE id=?",
+    [user_id],
+    err => {
+      if (err) throw err;
+      res.redirect("/admin/users");
+    }
+  );
+});
 
 
 

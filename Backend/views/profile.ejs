@@ -1,20 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile</title>
-  <link rel="stylesheet" href="/styles.css" />
+<meta charset="UTF-8">
+<title>Profile – LinkSphere</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f5f3f0;
+}
+
+/* NAVBAR */
+.navbar {
+  background: #075e54;
+  color: white;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 35px;
+  margin-right: 10px;
+}
+
+.navbar a {
+  color: white;
+  margin-right: 18px;
+  text-decoration: none;
+}
+
+/* PROFILE CARD */
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.profile-card {
+  background: white;
+  width: 650px;
+  padding: 30px;
+  border-radius: 18px;
+  display: flex;
+  gap: 35px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.12);
+}
+
+/* AVATAR */
+.avatar-box {
+  text-align: center;
+  position: relative;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 4px solid #075e54;
+  object-fit: cover;
+}
+
+.camera {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  background: #128c7e;
+  color: white;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.avatar-box input {
+  display: none;
+}
+
+/* INFO */
+.info {
+  flex: 1;
+}
+
+.info h2 {
+  margin-bottom: 3px;
+}
+
+.email {
+  color: #666;
+  margin-bottom: 25px;
+}
+
+form label {
+  font-size: 14px;
+  margin-top: 15px;
+  display: block;
+}
+
+form input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+form button {
+  margin-top: 25px;
+  width: 100%;
+  padding: 12px;
+  background: #128c7e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
-  <h1>My Profile</h1>
-  <div class="profile-card">
-    <img src="<%= user.profile_pic_url || '/default-avatar.png' %>" alt="Profile Picture" width="150" />
-    <p><strong>Username:</strong> <%= user.username %></p>
-    <p><strong>Employee Number:</strong> <%= user.employee_number %></p>
-    <p><strong>Email:</strong> <%= user.email %></p>
-    <p><strong>Role:</strong> <%= user.role || "Not set" %></p>
-    <a href="/chat/<%= user.id %>">Back to Chat</a>
+
+<div class="navbar">
+  <div class="left">
+    <img src="/linksphere.jpg" class="logo">
+    <strong>LinkSphere</strong>
   </div>
+  <div>
+    <a href="/chat">Chats</a>
+    <a href="/groups">Groups</a>
+    <a href="/status">Status</a>
+    <a href="/help">Help</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="profile-card">
+
+    <!-- AVATAR -->
+    <div class="avatar-box">
+      <form action="/upload-avatar" method="POST" enctype="multipart/form-data">
+        <img
+          src="<%= user.avatar ? '/uploads/' + user.avatar : '/images/default.png' %>"
+          class="avatar"
+          id="avatarPreview"
+        >
+
+        <label class="camera">
+          📷
+          <input type="file" name="avatar" accept="image/*"
+                 onchange="previewAvatar(event)">
+        </label>
+      </form>
+    </div>
+
+    <!-- USER INFO -->
+    <div class="info">
+      <h2><%= user.username %></h2>
+      <p class="email"><%= user.email %></p>
+
+      <form action="/update-profile" method="POST">
+        <label>Username</label>
+        <input type="text" name="username" value="<%= user.username %>" required>
+
+        <label>Email</label>
+        <input type="email" name="email" value="<%= user.email %>" required>
+
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function previewAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  document.getElementById("avatarPreview").src =
+    URL.createObjectURL(file);
+
+  // auto-submit after selection
+  event.target.form.submit();
+}
+</script>
+
 </body>
 </html>
